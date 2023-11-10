@@ -1,0 +1,8 @@
+grpc:
+  deadline-is-optional: true
+  channels:
+    my-service:
+      default-load-balancing-policy: round_robin
+      address: localhost:${grpcmock.port}
+      plaintext: true
+      class-service: com.frogdevelopment.micronaut.gateway.grpc.mock.model.HelloServiceGrpc
