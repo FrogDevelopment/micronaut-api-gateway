@@ -1,0 +1,8 @@
+gateway:
+  direct: false
+  routes:
+    my-service-id:
+      mapping:
+        - route: foo/bar
+          context: /foo-bar
+
