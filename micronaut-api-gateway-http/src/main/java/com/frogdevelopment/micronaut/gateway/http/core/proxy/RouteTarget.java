@@ -1,4 +1,6 @@
 package com.frogdevelopment.micronaut.gateway.http.core.proxy;
 
-record RouteTarget(String serviceId, String scheme, String host, int port, String newEndpoint) {
+import java.net.URI;
+
+record RouteTarget(URI uri, String newEndpoint) {
 }

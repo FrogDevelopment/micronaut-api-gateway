@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import com.frogdevelopment.micronaut.gateway.http.core.cache.PathMatcher;
 
-class SimplePathMatcherTest {
+class ServicePathMatcherTest {
 
-    private static final PathMatcher PATH_MATCHER = new SimplePathMatcher();
+    private static final PathMatcher PATH_MATCHER = new ServicePathMatcher();
 
 
     @Test

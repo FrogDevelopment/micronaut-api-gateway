@@ -6,4 +6,7 @@ gateway:
       mapping:
         - route: foo/bar
           context: /foo-bar
-
+    some-remote-application:
+      uri: http://localhost:51180/example
+      mapping:
+        - route: example

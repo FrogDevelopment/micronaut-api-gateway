@@ -1,9 +1,12 @@
 plugins {
-    id("io.micronaut.minimal.library") version "4.2.1"
+    id("io.micronaut.minimal.library") version "4.3.3"
 }
 
 dependencies {
     val lombokVersion = "1.18.24"
+    val mockitoInline = "5.2.0"
+    val wiremock = "3.4.1"
+
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
     // Micronaut processor defined after Lombok
@@ -25,8 +28,9 @@ dependencies {
     testImplementation("io.micronaut.test:micronaut-test-junit5")
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
     testImplementation("org.assertj:assertj-core")
-    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("org.mockito:mockito-inline:$mockitoInline")
     testImplementation("org.mockito:mockito-junit-jupiter")
+    testImplementation("org.wiremock:wiremock:${wiremock}")
 
     testRuntimeOnly("ch.qos.logback:logback-classic")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")

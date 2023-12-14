@@ -23,7 +23,7 @@ public class RoutedGatewayFactory {
                 .stream()
                 .flatMap(entry -> entry.getValue().getMapping()
                         .stream()
-                        .<PathMatcher>map(subRoute -> new RoutesPathMatcher(entry.getValue().getServiceId(), subRoute.getRoute(), subRoute.getContext())))
+                        .<PathMatcher>map(subRoute -> new RoutesPathMatcher(entry.getValue().getUri(), entry.getValue().getServiceId(), subRoute.getRoute(), subRoute.getContext())))
                 .toList();
 
         return Caffeine.newBuilder()

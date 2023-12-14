@@ -1,18 +1,21 @@
-package com.frogdevelopment.micronaut.gateway.http.routed.validation;
+package com.frogdevelopment.micronaut.gateway.http.routed.validation.validator;
 
 import java.util.HashMap;
 import java.util.Map;
+import jakarta.inject.Singleton;
 
 import com.frogdevelopment.micronaut.gateway.http.routed.config.GatewayRoute;
+import com.frogdevelopment.micronaut.gateway.http.routed.validation.annotation.UniqueRoutes;
 
 import io.micronaut.core.annotation.AnnotationValue;
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import io.micronaut.validation.validator.constraints.ConstraintValidatorContext;
-import jakarta.inject.Singleton;
 
 @Singleton
+@Introspected
 public class UniqueRoutesValidator implements ConstraintValidator<UniqueRoutes, Map<String, GatewayRoute>> {
 
     private static final String ERROR_MSG = "Route must be unique: [%s] is defined for '%s' and '%s'";
@@ -23,7 +26,7 @@ public class UniqueRoutesValidator implements ConstraintValidator<UniqueRoutes, 
             @NonNull final ConstraintValidatorContext context) {
 
         if (CollectionUtils.isEmpty(mapping)) {
-            context.messageTemplate("Routes mapping can not be empty");
+            context.messageTemplate("Can not be empty or null");
             return false;
         }
 

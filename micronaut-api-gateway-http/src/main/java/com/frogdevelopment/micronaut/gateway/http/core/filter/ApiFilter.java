@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 
 
 @Slf4j
-@ServerFilter("/api/**") // fixme have a more configurable declaration using, have a look at AnnotatedFilterRouteBuilder
+@ServerFilter("/api/**") // how to make it configurable using properties ? check ServerFilterRouteBuilder
 @RequiredArgsConstructor
 @SuppressWarnings("java:S1452")
 public class ApiFilter implements Ordered {

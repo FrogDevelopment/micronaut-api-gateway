@@ -6,19 +6,20 @@ import lombok.Singular;
 
 import java.util.List;
 
+import com.frogdevelopment.micronaut.gateway.http.routed.validation.annotation.ValidGatewayRoute;
+
 import io.micronaut.serde.annotation.Serdeable;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 
 @Data
 @Builder
 @Serdeable
+@ValidGatewayRoute
 public final class GatewayRoute {
 
-    @NotBlank
     private String serviceId;
 
-    @NotEmpty
+    private String uri;
+
     @Singular("mapping")
     private List<GatewaySubRoute> mapping;
 }

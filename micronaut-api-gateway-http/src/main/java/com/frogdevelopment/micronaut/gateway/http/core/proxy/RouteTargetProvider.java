@@ -2,6 +2,7 @@ package com.frogdevelopment.micronaut.gateway.http.core.proxy;
 
 import lombok.RequiredArgsConstructor;
 
+import java.net.URI;
 import java.util.Optional;
 
 import com.frogdevelopment.micronaut.gateway.http.core.cache.MatchingServiceEndpoint;
@@ -19,11 +20,13 @@ final class RouteTargetProvider {
 
     private final AsyncLoadingCache<String, Optional<MatchingServiceEndpoint>> matchingServiceEndpointCache;
     private final AsyncLoadingCache<String, LoadBalancer> loadBalancerCache;
+    private final AsyncLoadingCache<String, URI> uriCache;
 
     @NonNull
     Mono<RouteTarget> findRouteTarget(final String path) {
         return findMatchingServiceEndpoint(path)
-                .flatMap(this::toRouteTarget);
+                .flatMap(matchingServiceEndpoint -> toUri(matchingServiceEndpoint)
+                        .map(uri -> new RouteTarget(uri, matchingServiceEndpoint.endpoint())));
     }
 
     @NonNull
@@ -33,22 +36,19 @@ final class RouteTargetProvider {
     }
 
     @NonNull
-    private Mono<RouteTarget> toRouteTarget(final MatchingServiceEndpoint matchingServiceEndpoint) {
-        return Mono.fromFuture(loadBalancerCache.get(matchingServiceEndpoint.serviceId()))
-                .map(LoadBalancer::select)
-                .flatMap(Mono::from)
-                .map(serviceInstance -> toRouteTarget(matchingServiceEndpoint, serviceInstance));
+    private Mono<URI> toUri(final MatchingServiceEndpoint matchingServiceEndpoint) {
+        if (matchingServiceEndpoint.uri() != null) {
+            return Mono.fromFuture(uriCache.get(matchingServiceEndpoint.uri()));
+        } else {
+            return getServiceInstance(matchingServiceEndpoint)
+                    .map(ServiceInstance::getURI);
+        }
     }
 
-    @NonNull
-    private static RouteTarget toRouteTarget(final MatchingServiceEndpoint matchingServiceEndpoint,
-                                             final ServiceInstance serviceInstance) {
-        return new RouteTarget(
-                matchingServiceEndpoint.serviceId(),
-                serviceInstance.getURI().getScheme(),
-                serviceInstance.getHost(),
-                serviceInstance.getPort(),
-                matchingServiceEndpoint.endpoint());
+    private Mono<ServiceInstance> getServiceInstance(MatchingServiceEndpoint matchingServiceEndpoint) {
+        return Mono.fromFuture(loadBalancerCache.get(matchingServiceEndpoint.serviceId()))
+                .map(LoadBalancer::select)
+                .flatMap(Mono::from);
     }
 
 }

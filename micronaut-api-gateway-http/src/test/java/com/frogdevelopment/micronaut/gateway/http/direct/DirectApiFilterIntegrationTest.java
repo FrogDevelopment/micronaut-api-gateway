@@ -1,4 +1,4 @@
-package com.frogdevelopment.micronaut.gateway.http.routed;
+package com.frogdevelopment.micronaut.gateway.http.direct;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
@@ -34,8 +34,8 @@ import reactor.core.publisher.Mono;
 @WireMockTest(httpPort = 51180)
 @Tag("integrationTest")
 @ExtendWith(MockitoExtension.class)
-@MicronautTest(environments = "routed")
-class RoutedApiFilterIntegrationTest {
+@MicronautTest(environments = "direct")
+class DirectApiFilterIntegrationTest {
 
     @MockBean(AsyncLoadingCache.class)
     AsyncLoadingCache<String, LoadBalancer> loadBalancerCache() {
@@ -65,7 +65,7 @@ class RoutedApiFilterIntegrationTest {
     }
 
     @Test
-    void should_proxy_when_filterMatches_for_service(WireMockRuntimeInfo wmRuntimeInfo) {
+    void should_proxy_when_filterMatches(WireMockRuntimeInfo wmRuntimeInfo) {
         // given
         given(loadBalancerCache.get("my-service-id")).willReturn(CompletableFuture.completedFuture(loadBalancer));
         given(loadBalancer.select()).willReturn(Mono.just(serviceInstance));
@@ -75,7 +75,7 @@ class RoutedApiFilterIntegrationTest {
         var body = """
                 { "field_1":"value_1", "field_2": { "field_2_1:true } }""";
         var wireMock = wmRuntimeInfo.getWireMock();
-        wireMock.register(get(urlPathEqualTo("/foo-bar/my-endpoint"))
+        wireMock.register(get(urlPathEqualTo("/my-endpoint"))
                 .withQueryParam("test_1", WireMock.equalTo("value_1"))
                 .withQueryParam("test_2", WireMock.equalTo("value_2"))
                 .withHeader("X-client-id", WireMock.equalTo("custom-header"))
@@ -90,7 +90,7 @@ class RoutedApiFilterIntegrationTest {
                 .param("test_2", "value_2")
                 .and()
                 .header("X-client-id", "custom-header")
-                .get("/api/foo/bar/my-endpoint");
+                .get("/api/my-service-id/my-endpoint");
 
         // then
         response
@@ -98,34 +98,4 @@ class RoutedApiFilterIntegrationTest {
                 .statusCode(OK.getCode())
                 .body(IsEqual.equalTo(body));
     }
-
-    @Test
-    void should_proxy_when_filterMatches_for_uri(WireMockRuntimeInfo wmRuntimeInfo) {
-        // given
-        var body = """
-                { "field_1":"value_1", "field_2": { "field_2_1:true } }""";
-        var wireMock = wmRuntimeInfo.getWireMock();
-        wireMock.register(get(urlPathEqualTo("/example/my-endpoint"))
-                .withQueryParam("test_1", WireMock.equalTo("value_1"))
-                .withQueryParam("test_2", WireMock.equalTo("value_2"))
-                .withHeader("X-client-id", WireMock.equalTo("custom-header"))
-                .willReturn(ok(body)));
-
-        // when
-        var response = requestSpecification
-                .when()
-                .param("test_1", "value_1")
-                .and()
-                .param("test_2", "value_2")
-                .and()
-                .header("X-client-id", "custom-header")
-                .get("/api/example/my-endpoint");
-
-        // then
-        response
-                .then()
-                .statusCode(OK.getCode())
-                .body(IsEqual.equalTo(body));
-    }
-
 }

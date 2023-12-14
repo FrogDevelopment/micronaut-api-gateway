@@ -3,11 +3,13 @@ package com.frogdevelopment.micronaut.gateway.http.core.proxy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import jakarta.inject.Singleton;
+
 import io.micronaut.context.BeanProvider;
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpRequest;
-import jakarta.inject.Singleton;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -27,27 +29,37 @@ public class RequestMutator {
 
     @NonNull
     private MutableHttpRequest<?> mutate(final HttpRequest<?> request, final RouteTarget routeTarget) {
+        final var mutatedRequest = request.mutate()
+                .uri(uriBuilder -> {
+                    final var targetUri = routeTarget.uri();
+                    uriBuilder.scheme(targetUri.getScheme())
+                            .host(targetUri.getHost());
+
+                    if (targetUri.getPort() >= 0) {
+                        uriBuilder.port(targetUri.getPort());
+                    }
+
+                    if (StringUtils.isNotEmpty(targetUri.getPath())) {
+                        uriBuilder.replacePath(targetUri.getPath())
+                                .path(routeTarget.newEndpoint());
+                    } else {
+                        uriBuilder.replacePath(routeTarget.newEndpoint());
+                    }
+                });
+
         if (log.isDebugEnabled()) {
-            log.debug("Proxying [{}] to service '{}' as {}://{}:{}{}",
+            final var newUri = mutatedRequest.getUri();
+            log.debug("Proxying [{}] to {}://{}{}",
                     request.getPath(),
-                    routeTarget.serviceId(),
-                    routeTarget.scheme(),
-                    routeTarget.host(),
-                    routeTarget.port(),
-                    routeTarget.newEndpoint());
+                    newUri.getScheme(),
+                    newUri.getAuthority(),
+                    newUri.getPath());
         }
 
-        final var mutateRequest = request.mutate()
-                .uri(uri -> uri
-                        .scheme(routeTarget.scheme())
-                        .host(routeTarget.host())
-                        .port(routeTarget.port())
-                        .replacePath(routeTarget.newEndpoint()));
-
         // if some custom headers are needed, for instance
-        requestCustomizerBeanProvider.ifResolvable(requestCustomizer -> requestCustomizer.customize(mutateRequest));
+        requestCustomizerBeanProvider.ifResolvable(requestCustomizer -> requestCustomizer.customize(mutatedRequest));
 
-        return mutateRequest;
+        return mutatedRequest;
     }
 
 }
