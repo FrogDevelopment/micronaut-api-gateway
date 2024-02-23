@@ -19,6 +19,7 @@ import io.micronaut.http.annotation.RequestFilter;
 import io.micronaut.http.annotation.ServerFilter;
 import io.micronaut.http.client.ProxyHttpClient;
 import io.micronaut.http.filter.ServerFilterPhase;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -35,7 +36,7 @@ public class ApiFilter implements Ordered {
     public Publisher<MutableHttpResponse<?>> filterRequest(HttpRequest<?> request) {
         return requestMutator
                 .mutate(request)
-                .flatMap(target -> Mono.from(proxyHttpClient.proxy(target)))
+                .flatMapMany(target -> Flux.from(proxyHttpClient.proxy(target)))
                 .switchIfEmpty(createNotFoundResponse(request))
                 .onErrorResume(handleException(request));
     }
