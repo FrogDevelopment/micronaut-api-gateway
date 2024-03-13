@@ -30,25 +30,24 @@ dependencies {
     runtimeOnly("io.grpc:grpc-services")
     runtimeOnly("io.micronaut.discovery:micronaut-discovery-client")
 
-
-    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
-
+    testImplementation(enforcedPlatform("io.grpc:grpc-bom:${grpc}"))
+    testImplementation("io.micronaut:micronaut-context")
     testImplementation("io.micronaut.test:micronaut-test-junit5")
     testImplementation("org.assertj:assertj-core")
     testImplementation("org.mockito:mockito-inline:$mockitoInline")
     testImplementation("org.mockito:mockito-junit-jupiter")
     testImplementation("org.grpcmock:grpcmock-junit5:$grpcmock")
     testImplementation("io.grpc:grpc-testing")
+    // do not replace with jakarta (yet), as it is still needed by protoc-gen-grpc-java
+    testImplementation("javax.annotation:javax.annotation-api")
 
+    testRuntimeOnly(enforcedPlatform("io.grpc:grpc-bom:${grpc}"))
     testRuntimeOnly("ch.qos.logback:logback-classic")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testRuntimeOnly("org.yaml:snakeyaml")
 
-    testImplementation(enforcedPlatform("io.grpc:grpc-bom:${grpc}"))
-    testRuntimeOnly(enforcedPlatform("io.grpc:grpc-bom:${grpc}"))
-    // do not replace with jakarta (yet), as it is still needed by protoc-gen-grpc-java
-    testImplementation("javax.annotation:javax.annotation-api")
-
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     testCompileOnly("io.grpc:grpc-protobuf")
     testCompileOnly("io.grpc:grpc-stub")
     testCompileOnly("com.google.protobuf:protobuf-java")
