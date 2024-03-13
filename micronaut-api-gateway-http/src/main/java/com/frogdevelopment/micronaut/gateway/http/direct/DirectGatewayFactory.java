@@ -6,7 +6,7 @@ import java.util.Optional;
 import com.frogdevelopment.micronaut.gateway.http.core.cache.MatchingServiceEndpoint;
 import com.frogdevelopment.micronaut.gateway.http.core.cache.MatchingServiceEndpointCacheLoader;
 import com.frogdevelopment.micronaut.gateway.http.core.cache.PathMatcher;
-import com.frogdevelopment.micronaut.gateway.http.direct.cache.SimplePathMatcher;
+import com.frogdevelopment.micronaut.gateway.http.direct.cache.ServicePathMatcher;
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
@@ -18,7 +18,7 @@ public class DirectGatewayFactory {
 
     @Bean
     AsyncLoadingCache<String, Optional<MatchingServiceEndpoint>> serviceEndpointCache() {
-        final var pathMatchers = List.<PathMatcher>of(new SimplePathMatcher());
+        final var pathMatchers = List.<PathMatcher>of(new ServicePathMatcher());
 
         return Caffeine.newBuilder()
                 .buildAsync(new MatchingServiceEndpointCacheLoader(pathMatchers));

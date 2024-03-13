@@ -65,7 +65,8 @@ class RequestMutatorTest {
                     return mutableHttpRequest;
                 }));
 
-        var routeTarget = new RouteTarget("service-id", "http", "my-host", 1234, "my-endpoint");
+        var uri = UriBuilder.of("http://my-host:123").build();
+        var routeTarget = new RouteTarget(uri, "my-endpoint");
         given(routeTargetProvider.findRouteTarget("/api/my-service/my-endpoint")).willReturn(Mono.just(routeTarget));
 
         // when
@@ -73,12 +74,12 @@ class RequestMutatorTest {
 
         // then
         assertThat(optional).hasValueSatisfying(mutatedRequest -> {
-            var uri = mutatedRequest.getUri();
+            var mutatedUri = mutatedRequest.getUri();
             assertSoftly(softAssertions -> {
-                softAssertions.assertThat(uri.getScheme()).isEqualTo(routeTarget.scheme());
-                softAssertions.assertThat(uri.getHost()).isEqualTo(routeTarget.host());
-                softAssertions.assertThat(uri.getPort()).isEqualTo(routeTarget.port());
-                softAssertions.assertThat(uri.getPath()).isEqualTo("/" + routeTarget.newEndpoint());
+                softAssertions.assertThat(mutatedUri.getScheme()).isEqualTo(routeTarget.uri().getScheme());
+                softAssertions.assertThat(mutatedUri.getHost()).isEqualTo(routeTarget.uri().getHost());
+                softAssertions.assertThat(mutatedUri.getPort()).isEqualTo(routeTarget.uri().getPort());
+                softAssertions.assertThat(mutatedUri.getPath()).isEqualTo("/" + routeTarget.newEndpoint());
             });
         });
 

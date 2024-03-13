@@ -8,8 +8,8 @@ import com.frogdevelopment.micronaut.gateway.http.core.cache.PathMatcher;
 
 class RoutesPathMatcherTest {
 
-    private static final PathMatcher PATH_MATCHER = new RoutesPathMatcher("service-id", "my-service", null);
-    private static final PathMatcher PATH_MATCHER_WITH_CONTEXT = new RoutesPathMatcher("service-id", "my-service", "/my-api");
+    private static final PathMatcher PATH_MATCHER = new RoutesPathMatcher("", "service-id", "my-service", null);
+    private static final PathMatcher PATH_MATCHER_WITH_CONTEXT = new RoutesPathMatcher(null, "service-id", "my-service", "/my-api");
 
     @Test
     void should_return_null_when_notMatching() {

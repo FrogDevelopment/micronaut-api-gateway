@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.frogdevelopment.micronaut.gateway.http.core.proxy.RequestMutator;
 
+import io.micronaut.discovery.exceptions.NoAvailableServiceException;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpRequest;
 import io.micronaut.http.client.ProxyHttpClient;
@@ -61,6 +62,22 @@ class ApiFilterTest {
         var response = optional.get();
         assertThat(response.getStatus().getCode()).isEqualTo(NOT_FOUND.getCode());
         assertThat(response.getBody(String.class)).hasValue("No service found to proxy [/my/path/endpoint]");
+        then(proxyHttpClient).shouldHaveNoInteractions();
+    }
+
+    @Test
+    void should_return_NOT_FOUND_when_noServiceIsAvailable() {
+        // given
+        given(requestMutator.mutate(httpRequest)).willReturn(Mono.error(new NoAvailableServiceException("my-service-id")));
+
+        // when
+        var optional = Mono.from(apiFilter.filterRequest(httpRequest)).blockOptional();
+
+        // then
+        assertThat(optional).isPresent();
+        var response = optional.get();
+        assertThat(response.getStatus().getCode()).isEqualTo(NOT_FOUND.getCode());
+        assertThat(response.getBody(String.class)).hasValue("No available services for ID: my-service-id");
         then(proxyHttpClient).shouldHaveNoInteractions();
     }
 

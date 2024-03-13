@@ -10,7 +10,7 @@ import static org.grpcmock.GrpcMock.response;
 import static org.grpcmock.GrpcMock.serverStreamingMethod;
 import static org.grpcmock.GrpcMock.statusException;
 import static org.grpcmock.GrpcMock.unaryMethod;
-import static org.grpcmock.definitions.verification.CountMatcher.times;
+import static org.grpcmock.definitions.verification.CountMatcher.once;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import jakarta.inject.Inject;
 
 import org.grpcmock.GrpcMock;
 import org.grpcmock.junit5.GrpcMockExtension;
@@ -47,7 +48,6 @@ import io.micronaut.context.DefaultApplicationContextBuilder;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.test.support.TestPropertyProvider;
-import jakarta.inject.Inject;
 
 @Tag("integrationTest")
 @ExtendWith(GrpcMockExtension.class)
@@ -107,7 +107,6 @@ class GrpcGatewayIntegrationTest implements TestPropertyProvider {
                 .setReply("world")
                 .build();
         grpcMock.register(unaryMethod(HelloServiceGrpc.getSayHelloMethod())
-                .withHeader(KEY_CUSTOM, requestId)
                 .withRequest(request)
                 .willReturn(response));
 
@@ -125,7 +124,7 @@ class GrpcGatewayIntegrationTest implements TestPropertyProvider {
                         .withHeader(KEY_CUSTOM, requestId)
                         .withRequest(request)
                         .build(),
-                times(1));
+                once());
 
         assertThat(output).isEqualTo(response);
     }
@@ -162,7 +161,7 @@ class GrpcGatewayIntegrationTest implements TestPropertyProvider {
                         .withNumberOfRequests(1)
                         .withFirstRequest(request)
                         .build(),
-                times(1));
+                once());
 
         assertThat(responses).containsExactly(response);
     }
@@ -197,7 +196,7 @@ class GrpcGatewayIntegrationTest implements TestPropertyProvider {
                         .withHeader(KEY_CUSTOM, requestId)
                         .withRequest(request)
                         .build(),
-                times(1));
+                once());
 
         assertThat(responses).containsExactly(response);
     }
@@ -251,7 +250,7 @@ class GrpcGatewayIntegrationTest implements TestPropertyProvider {
                         .withNumberOfRequests(1)
                         .withFirstRequest(request)
                         .build(),
-                times(1));
+                once());
 
         assertThat(responses).containsExactly(response);
     }
