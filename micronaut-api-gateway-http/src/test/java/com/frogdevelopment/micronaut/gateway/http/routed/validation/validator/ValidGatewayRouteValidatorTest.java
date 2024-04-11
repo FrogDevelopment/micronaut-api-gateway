@@ -1,6 +1,5 @@
 package com.frogdevelopment.micronaut.gateway.http.routed.validation.validator;
 
-import static java.util.AbstractMap.SimpleEntry;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.stream.Collectors;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -77,7 +75,6 @@ class ValidGatewayRouteValidatorTest {
     }
 
     @Test
-    @Disabled("find why it returns a default constraint")
     void should_return_emptyConstraintViolations_when_valid() {
         // given
         final var gatewayRoute = GatewayRoute.builder()
@@ -94,12 +91,9 @@ class ValidGatewayRouteValidatorTest {
 
     private static <T> Map<String, String> toMap(Set<ConstraintViolation<T>> constraintViolations) {
         return constraintViolations.stream()
-                .map(constraintViolation -> {
-                    final var path = constraintViolation.getPropertyPath().toString();
-                    final var message = constraintViolation.getMessage();
-                    return new SimpleEntry<>(path, message);
-                })
-                .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
+                .collect(Collectors.toMap(
+                        constraintViolation -> constraintViolation.getPropertyPath().toString(),
+                        ConstraintViolation::getMessage));
     }
 
 }

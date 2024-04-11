@@ -54,6 +54,10 @@ public class ValidGatewayRouteValidator implements ConstraintValidator<ValidGate
             hasViolations = true;
         }
 
-        return hasViolations;
+        if (hasViolations) {
+            context.disableDefaultConstraintViolation();
+        }
+
+        return !hasViolations;
     }
 }
