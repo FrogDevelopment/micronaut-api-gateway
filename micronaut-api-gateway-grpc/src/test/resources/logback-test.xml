@@ -10,7 +10,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.frogdevelopment.micronaut.gateway.http" level="DEBUG"/>
+<!--    <logger name="com.frogdevelopment.micronaut.gateway.http" level="DEBUG"/>-->
 
     <root level="info">
         <appender-ref ref="STDOUT"/>
