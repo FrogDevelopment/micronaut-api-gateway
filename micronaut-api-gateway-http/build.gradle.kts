@@ -11,6 +11,7 @@ dependencies {
     implementation(mn.micronaut.http.client.asProvider())
     implementation(mn.micronaut.management)
     implementation(mn.micronaut.reactor.asProvider())
+    implementation(mn.micronaut.reactor.http.client)
     implementation(mn.micronaut.serde.jackson)
     implementation(mn.micronaut.validation.asProvider())
 
