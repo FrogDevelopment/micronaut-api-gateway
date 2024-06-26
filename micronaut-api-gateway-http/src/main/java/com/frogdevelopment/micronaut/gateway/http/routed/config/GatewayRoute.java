@@ -20,6 +20,8 @@ public final class GatewayRoute {
 
     private String uri;
 
+    private String uriHealthEndpoint;
+
     @Singular("mapping")
     private List<GatewaySubRoute> mapping;
 }
