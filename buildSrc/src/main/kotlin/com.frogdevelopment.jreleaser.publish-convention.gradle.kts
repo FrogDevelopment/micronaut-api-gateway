@@ -1,7 +1,6 @@
 plugins {
     java
     `maven-publish`
-    signing
 }
 
 java {
@@ -26,7 +25,7 @@ publishing {
             pom {
                 description = project.description
                 url = "https://github.com/FrogDevelopment/micronaut-api-gateway/wiki"
-                inceptionYear = "2023"
+                inceptionYear = "2024"
                 issueManagement {
                     system = "GitHub"
                     url = "https://github.com/FrogDevelopment/micronaut-api-gateway/issues"
@@ -60,22 +59,8 @@ publishing {
 
     repositories {
         maven {
-            name = "github"
-            url = uri("https://maven.pkg.github.com/FrogDevelopment/micronaut-api-gateway")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
+            name = "jreleaser"
+            url = uri(layout.buildDirectory.dir("staging-deploy"))
         }
-
-    }
-}
-val releaseVersion = """^\d+\.\d+\.\d+$""".toRegex().matches(version.toString())
-signing {
-    if (releaseVersion) {
-        val signingKey: String? by project
-        val signingPassword: String? by project
-        useInMemoryPgpKeys(signingKey, signingPassword)
-        sign(publishing.publications["mavenJava"])
     }
 }

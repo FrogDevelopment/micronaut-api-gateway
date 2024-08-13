@@ -5,6 +5,7 @@ wiremock = "3.5.2"
 grpcmock = "0.12.0"
 
 plugin-grgit = "5.2.2"
+plugin-jreleaser = "1.13.1"
 plugin-micronaut = "4.4.2"
 plugin-google-protobuf = "0.9.4"
 
@@ -17,5 +18,6 @@ grpcmock-junit5 = { module = "org.grpcmock:grpcmock-junit5", version.ref = "grpc
 
 [plugins]
 grgit = { id = "org.ajoberstar.grgit:grgit-gradle", version.ref = "plugin-grgit" }
+jreleaser = { id = "org.jreleaser:jreleaser-gradle-plugin", version.ref = "plugin-jreleaser" }
 micronaut = { id = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "plugin-micronaut" }
 google-protobuf = { id = "com.google.protobuf:protobuf-gradle-plugin", version.ref = "plugin-google-protobuf" }

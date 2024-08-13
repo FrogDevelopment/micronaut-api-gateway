@@ -13,6 +13,7 @@ dependencies {
 
     implementation(asDependency(libs.plugins.micronaut))
     implementation(asDependency(libs.plugins.grgit))
+    implementation(asDependency(libs.plugins.jreleaser))
     implementation(asDependency(libs.plugins.google.protobuf))
 }
 

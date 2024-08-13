@@ -2,27 +2,39 @@ plugins {
     id("org.ajoberstar.grgit")
 }
 
-afterEvaluate {
-    computeProjectVersion()
+val versionProvider = Wrapper(computeProjectVersion())
+allprojects {
+    group = "com.frog-development.micronaut"
+    version = versionProvider
 }
 
-fun computeProjectVersion() {
+/**
+ * temporary workaround waiting for project.version to be provider aware.
+ * <ul>
+ * <li><a href="https://github.com/gradle/gradle/issues/25971">workaround</a></li>
+ * <li><a href="https://github.com/gradle/gradle/issues/13672">Project "coordinates" should use providers</a></li>
+ * </ul>
+ */
+class Wrapper(private val version: Provider<String>) {
+    override fun toString(): String {
+        return version.get()
+    }
+}
+
+fun computeProjectVersion(): Provider<String> {
     val branchName = grgit.branch.current().name
 
     println("Current branch: $branchName")
 
     val computedVersion = when (branchName) {
         "HEAD" -> handleHead()
-        "develop" -> handleDevelop()
+        "main" -> handleMain()
         else -> handleBranch(branchName)
     }
 
-    allprojects {
-        group = rootProject.group
-        version = computedVersion
-    }
+    println("Computed version: $computedVersion")
 
-    println("Computed version: $version")
+    return provider { computedVersion }
 }
 
 fun handleHead(): String {
@@ -33,14 +45,18 @@ fun handleHead(): String {
     return githubRefName
 }
 
-fun handleDevelop(): String {
-    return "develop-SNAPSHOT"
+fun handleMain(): String {
+    return "main-SNAPSHOT"
 }
 
 fun handleBranch(branchName: String): String {
     val matchBranchResult = """^(?<type>\w+)/(?<details>.+)?$""".toRegex().find(branchName)
     val branchType = matchBranchResult!!.groups["type"]?.value!!
     val branchDetails = matchBranchResult.groups["details"]?.value!!
+
+    if (branchType == "release" || branchType == "hotfix") {
+        return "$branchDetails-SNAPSHOT"
+    }
 
     return "$branchType-$branchDetails-SNAPSHOT"
 }
