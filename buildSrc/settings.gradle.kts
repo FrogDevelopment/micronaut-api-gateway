@@ -1,5 +1,5 @@
 import io.micronaut.gradle.catalog.LenientVersionCatalogParser
-import io.micronaut.gradle.catalog.MicronautCatalogSettingsPlugin.MN_OVERRIDE_VERSIONS_TOML_FILE
+import io.micronaut.gradle.catalog.MicronautCatalogSettingsPlugin.OVERRIDE_VERSIONS_TOML_FILE
 import io.micronaut.gradle.catalog.VersionCatalogTomlModel
 import org.gradle.internal.management.VersionCatalogBuilderInternal
 import java.util.*
@@ -23,7 +23,7 @@ dependencyResolutionManagement {
             description = "Micronaut Catalog"
             from("io.micronaut.platform:micronaut-platform:$micronautVersion")
 
-            val catalogOverrideFile = file("../gradle/$MN_OVERRIDE_VERSIONS_TOML_FILE")
+            val catalogOverrideFile = file("../gradle/mn-$OVERRIDE_VERSIONS_TOML_FILE")
             if (catalogOverrideFile.exists()) {
                 val parser = LenientVersionCatalogParser()
                 catalogOverrideFile.inputStream().use { fis ->
