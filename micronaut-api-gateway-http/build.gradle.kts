@@ -1,5 +1,6 @@
 plugins {
     id("com.frogdevelopment.library-convention")
+    id("com.frogdevelopment.jreleaser.publish-convention")
 }
 
 dependencies {
@@ -18,4 +19,15 @@ dependencies {
     testImplementation(mn.micronaut.http.server.netty)
     testImplementation(mn.micronaut.test.rest.assured)
     testImplementation(libs.wiremock)
+}
+
+publishing {
+    publications {
+        named<MavenPublication>("mavenJava") {
+            pom {
+                name = "Micronaut API Gateway - HTTP"
+                description = "API Gateway for HTTP calls"
+            }
+        }
+    }
 }

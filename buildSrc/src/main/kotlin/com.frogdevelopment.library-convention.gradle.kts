@@ -1,6 +1,5 @@
 plugins {
     id("io.micronaut.minimal.library")
-    id("com.frogdevelopment.publish-convention")
     jacoco
 }
 

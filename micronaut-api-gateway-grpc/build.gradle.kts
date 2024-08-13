@@ -2,6 +2,7 @@ import com.google.protobuf.gradle.id
 
 plugins {
     id("com.frogdevelopment.library-convention")
+    id("com.frogdevelopment.jreleaser.publish-convention")
     id("com.google.protobuf")
 }
 
@@ -55,4 +56,19 @@ protobuf {
     }
 }
 
-tasks.getByName("testClasses").dependsOn("generateTestProto")
+tasks {
+    testClasses {
+        dependsOn(generateTestProto)
+    }
+}
+
+publishing {
+    publications {
+        named<MavenPublication>("mavenJava") {
+            pom {
+                name = "Micronaut API Gateway - gRPC"
+                description = "API Gateway for gRPC calls"
+            }
+        }
+    }
+}
