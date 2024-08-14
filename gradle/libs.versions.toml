@@ -1,7 +1,7 @@
 [versions]
 
 mockito-inline = "5.2.0"
-wiremock = "3.5.2"
+wiremock = "3.9.1"
 grpcmock = "0.14.0"
 
 plugin-grgit = "5.2.2"
