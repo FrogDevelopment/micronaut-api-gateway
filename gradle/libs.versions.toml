@@ -2,7 +2,7 @@
 
 mockito-inline = "5.2.0"
 wiremock = "3.5.2"
-grpcmock = "0.12.0"
+grpcmock = "0.14.0"
 
 plugin-grgit = "5.2.2"
 plugin-jreleaser = "1.13.1"
