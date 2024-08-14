@@ -10,16 +10,15 @@ repositories {
 }
 
 java {
-//    sourceCompatibility = JavaVersion.toVersion("21")
-//    targetCompatibility = JavaVersion.toVersion("21")
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
+        vendor = JvmVendorSpec.ADOPTIUM
     }
 }
 
 tasks {
     wrapper {
-        gradleVersion = "8.7"
+        gradleVersion = "8.10"
         distributionType = Wrapper.DistributionType.ALL
     }
 }
