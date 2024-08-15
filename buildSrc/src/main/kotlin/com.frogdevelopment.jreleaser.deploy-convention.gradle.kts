@@ -5,12 +5,12 @@ plugins {
     id("org.jreleaser")
 }
 
-val releaseRegex = """^\d+\.\d+\.\d+$""".toRegex()
-
 jreleaser {
     gitRootSearch = true
     dependsOnAssemble = true
-    dryrun = provider { !releaseRegex.matches(version.toString()) }
+    dryrun = providers.environmentVariable("DRY_RUN")
+        .map(String::toBoolean)
+        .orElse(true)
 
     project {
         copyright.set("FrogDevelopment")
@@ -52,4 +52,5 @@ tasks {
     jreleaserSign {
         childProjects.forEach { child -> dependsOn(child.value.tasks.named("publish")) }
     }
+
 }
