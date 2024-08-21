@@ -49,7 +49,8 @@ public class RequestMutator {
 
         if (log.isDebugEnabled()) {
             final var newUri = mutatedRequest.getUri();
-            log.debug("Proxying [{}] to {}://{}{}",
+            log.debug("Proxying [{} - {}] to {}://{}{}",
+                    request.getMethod(),
                     request.getPath(),
                     newUri.getScheme(),
                     newUri.getAuthority(),
