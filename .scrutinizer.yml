@@ -1,0 +1,4 @@
+build:
+  environment:
+    sdkman:
+      - java@21.0.3-tem

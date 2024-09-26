@@ -30,7 +30,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3.1.0
 
       - name: Compile & Test
-        run: ./gradlew test
+        run: ./gradlew test jacocoTestReport
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
