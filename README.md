@@ -1,4 +1,6 @@
-![Build](https://github.com/FrogDevelopment/micronaut-api-gateway/actions/workflows/ci_cd.yml/badge.svg)
+![Build](https://github.com/FrogDevelopment/micronaut-api-gateway/actions/workflows/build.yml/badge.svg)
+![GitHub Release](https://img.shields.io/github/v/release/FrogDevelopment/consul-populate)
+[![Release date](https://img.shields.io/github/release-date/FrogDevelopment/consul-populate)](https://packagist.org/packages/FrogDevelopment/consul-populate)
 
 # Micronaut API Gateway
 
