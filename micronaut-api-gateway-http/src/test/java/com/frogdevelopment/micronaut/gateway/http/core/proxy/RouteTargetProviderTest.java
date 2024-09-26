@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.frogdevelopment.micronaut.gateway.http.core.cache.MatchingServiceEndpoint;
+import com.frogdevelopment.micronaut.gateway.http.core.config.GatewayProperties;
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 
 import io.micronaut.discovery.ServiceInstance;
@@ -43,10 +44,12 @@ class RouteTargetProviderTest {
     private ServiceInstance serviceInstance;
     @Mock
     private URI matchingURI;
+    @Mock
+    private GatewayProperties gatewayProperties;
 
     @BeforeEach()
     void beforeEach() {
-        routeTargetProvider = new RouteTargetProvider(matchingServiceEndpointCache, loadBalancerCache, uriCache);
+        routeTargetProvider = new RouteTargetProvider(matchingServiceEndpointCache, loadBalancerCache, uriCache, gatewayProperties);
     }
 
     @Test
@@ -117,5 +120,55 @@ class RouteTargetProviderTest {
             assertThat(actual.uri().getPort()).isEqualTo(1234);
         });
         then(uriCache).shouldHaveNoInteractions();
+    }
+
+    @Test
+    void should_return_URI_from_foundServiceInstanceAndDockerDns_when_hostIsLocalhost() {
+        // given
+        given(matchingServiceEndpointCache.get("my-path")).willReturn(CompletableFuture.completedFuture(Optional.of(matchingServiceEndpoint)));
+        given(matchingServiceEndpoint.serviceId()).willReturn("service-id");
+        given(loadBalancerCache.get("service-id")).willReturn(CompletableFuture.completedFuture(loadBalancer));
+        given(loadBalancer.select()).willReturn(Mono.just(serviceInstance));
+        given(gatewayProperties.isUseHostDockerInternal()).willReturn(true);
+        given(serviceInstance.getHost()).willReturn("localhost");
+        given(serviceInstance.getPort()).willReturn(1234);
+
+        // when
+        var optional = routeTargetProvider.findRouteTarget("my-path").blockOptional();
+
+        // then
+        assertThat(optional).hasValueSatisfying(actual -> {
+            assertThat(actual.newEndpoint()).isEqualTo(matchingServiceEndpoint.endpoint());
+            assertThat(actual.uri().getScheme()).isEqualTo("http");
+            assertThat(actual.uri().getHost()).isEqualTo("host.docker.internal");
+            assertThat(actual.uri().getPort()).isEqualTo(1234);
+        });
+        then(uriCache).shouldHaveNoInteractions();
+        then(serviceInstance).shouldHaveNoMoreInteractions();
+    }
+
+    @Test
+    void should_return_URI_from_foundServiceInstance_when_hostIsNotLocalhost() {
+        // given
+        given(matchingServiceEndpointCache.get("my-path")).willReturn(CompletableFuture.completedFuture(Optional.of(matchingServiceEndpoint)));
+        given(matchingServiceEndpoint.serviceId()).willReturn("service-id");
+        given(loadBalancerCache.get("service-id")).willReturn(CompletableFuture.completedFuture(loadBalancer));
+        given(loadBalancer.select()).willReturn(Mono.just(serviceInstance));
+        given(gatewayProperties.isUseHostDockerInternal()).willReturn(true);
+        given(serviceInstance.getHost()).willReturn("my-host");
+        given(serviceInstance.getURI()).willReturn(UriBuilder.of("https://my-host:1234").build());
+
+        // when
+        var optional = routeTargetProvider.findRouteTarget("my-path").blockOptional();
+
+        // then
+        assertThat(optional).hasValueSatisfying(actual -> {
+            assertThat(actual.newEndpoint()).isEqualTo(matchingServiceEndpoint.endpoint());
+            assertThat(actual.uri().getScheme()).isEqualTo("https");
+            assertThat(actual.uri().getHost()).isEqualTo("my-host");
+            assertThat(actual.uri().getPort()).isEqualTo(1234);
+        });
+        then(uriCache).shouldHaveNoInteractions();
+        then(serviceInstance).shouldHaveNoMoreInteractions();
     }
 }
