@@ -4,14 +4,15 @@ import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
 import java.util.Optional;
+import jakarta.inject.Singleton;
 
 import com.frogdevelopment.micronaut.gateway.http.core.cache.MatchingServiceEndpoint;
+import com.frogdevelopment.micronaut.gateway.http.core.config.GatewayProperties;
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.discovery.ServiceInstance;
 import io.micronaut.http.client.LoadBalancer;
-import jakarta.inject.Singleton;
 import reactor.core.publisher.Mono;
 
 @Singleton
@@ -21,6 +22,7 @@ final class RouteTargetProvider {
     private final AsyncLoadingCache<String, Optional<MatchingServiceEndpoint>> matchingServiceEndpointCache;
     private final AsyncLoadingCache<String, LoadBalancer> loadBalancerCache;
     private final AsyncLoadingCache<String, URI> uriCache;
+    private final GatewayProperties gatewayProperties;
 
     @NonNull
     Mono<RouteTarget> findRouteTarget(final String path) {
@@ -41,7 +43,13 @@ final class RouteTargetProvider {
             return Mono.fromFuture(uriCache.get(matchingServiceEndpoint.uri()));
         } else {
             return getServiceInstance(matchingServiceEndpoint)
-                    .map(ServiceInstance::getURI);
+                    .map(serviceInstance -> {
+                        if (gatewayProperties.isUseHostDockerInternal() && "localhost".equals(serviceInstance.getHost())) {
+                            return URI.create("http://host.docker.internal:" + serviceInstance.getPort());
+                        } else {
+                            return serviceInstance.getURI();
+                        }
+                    });
         }
     }
 
