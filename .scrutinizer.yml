@@ -2,3 +2,12 @@ build:
   environment:
     sdkman:
       - java@21.0.3-tem
+
+  nodes:
+    tests-with-coverage:
+      tests:
+        override:
+          - command: ./gradlew test jacocoTestReport
+            coverage:
+              file: '**/build/reports/jacoco/test/jacocoTestReport.xml'
+              format: 'jacoco'
