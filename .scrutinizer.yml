@@ -4,10 +4,22 @@ build:
       - java@21.0.3-tem
 
   nodes:
-    tests-with-coverage:
+    test:
       tests:
         override:
-          - command: ./gradlew test jacocoTestReport
+          - command: ./gradlew test
+            title: Test
+    coverage:
+      requires:
+        - node: test
+      tests:
+        override:
+          - command: ./gradlew jacocoTestReport
+            title: Report
             coverage:
               file: '**/build/reports/jacoco/test/jacocoTestReport.xml'
               format: 'jacoco'
+
+checks:
+  java:
+    code_rating: true

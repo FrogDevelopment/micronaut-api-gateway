@@ -22,7 +22,8 @@ class Wrapper(private val version: Provider<String>) {
 }
 
 fun computeProjectVersion(): Provider<String> {
-    val branchName = grgit.branch.current().name
+    val branchName = providers.environmentVariable("SCRUTINIZER_BRANCH")
+        .getOrElse(grgit.branch.current().name)
 
     println("Current branch: $branchName")
 
